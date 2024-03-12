@@ -1,21 +1,13 @@
-from preprocess import feature_selection, scaling_func, path, hot_encoding_func
-import numpy as np
 import pandas as pd
-import joblib, os
-from train import features_list, categorical_features
+import numpy as np
+from preprocess import preprocessing
+from __init__ import MODEL_PATH
+import joblib
 
-def make_prediction_refactored(input_data: pd.DataFrame) -> np.ndarray:
-    is_test = True
-    # Feature selection
-    new_data = feature_selection(input_data, is_test, features_list, [])
-    # Encoding
-    new_data = hot_encoding_func(new_data, is_test, categorical_features, [])
-    # Scaling
-    new_data = scaling_func(new_data, is_test, categorical_features, [])
- 
-    model_unload = joblib.load(os.path.join(path, 'model.joblib'))
-    y_pred_test = model_unload.predict(new_data)
-    y_pred_test = np.abs(y_pred_test)
- 
-    return y_pred_test
+def make_prediction(data: pd.DataFrame) -> np.ndarray:
+    new_data=preprocessing(data, True)
+    model = joblib.load(MODEL_PATH)
+    y_pred = model.predict(new_data)
+    return np.abs(y_pred)
+
 
